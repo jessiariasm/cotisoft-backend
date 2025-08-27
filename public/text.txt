@@ -1,0 +1,23 @@
+cotisoft/
+├── index.html
+├── login.html
+├── dashboard.html
+├── cotizaciones.html
+├── nueva-cotizacion.html
+├── clientes.html
+├── productos.html
+├── usuarios.html
+├── css/
+│   ├── styles.css
+│   └── auth.css
+├── js/
+│   ├── auth.js
+│   ├── dashboard.js
+│   ├── cotizaciones.js
+│   ├── nueva-cotizacion.js
+│   ├── clientes.js
+│   ├── productos.js
+│   └── usuarios.js
+└── assets/
+    ├── logo.png
+    └── favicon.ico

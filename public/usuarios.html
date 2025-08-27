@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuarios - COTISOFT</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="assets/logo.png" alt="A&H Soluciones" class="logo">
+                <span>COTISOFT</span>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="cotizaciones.html">Cotizaciones</a></li>
+                    <li><a href="clientes.html">Clientes</a></li>
+                    <li><a href="productos.html">Productos</a></li>
+                    <li class="active"><a href="usuarios.html">Usuarios</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logout-btn">Cerrar sesión</button>
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Usuarios</h1>
+                <div class="user-info">
+                    <span id="user-name"></span>
+                    <div class="user-avatar"></div>
+                </div>
+            </header>
+            <section class="content-section">
+                <div class="section-header">
+                    <button class="btn-primary">+ Nuevo Usuario</button>
+                </div>
+                <div class="grid-panel">
+                    <div class="user-card">
+                        <div class="user-header">
+                            <div class="user-avatar big">JP</div>
+                            <h3>Juan Pérez</h3>
+                            <span class="role vendedor">Vendedor</span>
+                        </div>
+                        <p>juan.perez@empresa.com</p>
+                        <div class="user-actions">
+                            <button class="btn-action">Editar</button>
+                            <button class="btn-action danger">Desactivar</button>
+                        </div>
+                    </div>
+                    <div class="user-card">
+                        <div class="user-header">
+                            <div class="user-avatar big">AM</div>
+                            <h3>Ana Martínez</h3>
+                            <span class="role gerente">Gerente</span>
+                        </div>
+                        <p>ana.martinez@empresa.com</p>
+                        <div class="user-actions">
+                            <button class="btn-action">Editar</button>
+                            <button class="btn-action danger">Desactivar</button>
+                        </div>
+                    </div>
+                    <div class="user-card">
+                        <div class="user-header">
+                            <div class="user-avatar big">AD</div>
+                            <h3>Admin User</h3>
+                            <span class="role admin">Administrador</span>
+                        </div>
+                        <p>admin@empresa.com</p>
+                        <div class="user-actions">
+                            <button class="btn-action">Editar</button>
+                            <button class="btn-action danger">Desactivar</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="js/usuarios.js"></script>
+</body>
+</html>

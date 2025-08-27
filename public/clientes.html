@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes - COTISOFT</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="assets/logo.png" alt="A&H Soluciones" class="logo">
+                <span>COTISOFT</span>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="cotizaciones.html">Cotizaciones</a></li>
+                    <li class="active"><a href="clientes.html">Clientes</a></li>
+                    <li><a href="productos.html">Productos</a></li>
+                    <li id="admin-users-link" style="display: none;"><a href="usuarios.html">Usuarios</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logout-btn">Cerrar sesión</button>
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Clientes</h1>
+                <div class="user-info">
+                    <span id="user-name"></span>
+                    <div class="user-avatar"></div>
+                </div>
+            </header>
+            <section class="content-section">
+                <div class="section-header">
+                    <button class="btn-primary">+ Nuevo Cliente</button>
+                    <div class="search-filter">
+                        <input type="text" placeholder="Buscar cliente...">
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Empresa</th>
+                                <th>NIT</th>
+                                <th>Contacto</th>
+                                <th>Cotizaciones</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Cliente A</td>
+                                <td>Industrias ABC</td>
+                                <td>123456-7</td>
+                                <td>contacto@clientea.com</td>
+                                <td>5</td>
+                                <td>
+                                    <button class="btn-action">Ver</button>
+                                    <button class="btn-action">Editar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Cliente B</td>
+                                <td>Empresa XYZ</td>
+                                <td>765432-1</td>
+                                <td>info@clienteb.com</td>
+                                <td>12</td>
+                                <td>
+                                    <button class="btn-action">Ver</button>
+                                    <button class="btn-action">Editar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="js/clientes.js"></script>
+</body>
+</html>

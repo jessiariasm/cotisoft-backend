@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Cotización - COTISOFT</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/formulario.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="assets/logo.png" alt="A&H Soluciones" class="logo">
+                <span>COTISOFT</span>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="cotizaciones.html">Cotizaciones</a></li>
+                    <li><a href="clientes.html">Clientes</a></li>
+                    <li><a href="productos.html">Productos</a></li>
+                    <li id="admin-users-link" style="display: none;"><a href="usuarios.html">Usuarios</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logout-btn">Cerrar sesión</button>
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Nueva Cotización</h1>
+                <div class="user-info">
+                    <span id="user-name"></span>
+                    <div class="user-avatar"></div>
+                </div>
+            </header>
+            <section class="form-section">
+                <form id="cotizacion-form">
+                    <div class="form-group">
+                        <label for="cliente">Cliente</label>
+                        <select id="cliente" required>
+                            <option value="">Seleccionar cliente</option>
+                            <option value="clienteA">Cliente A</option>
+                            <option value="clienteB">Cliente B</option>
+                            <option value="clienteC">Cliente C</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Agregar productos</label>
+                        <div class="product-form">
+                            <select id="producto-select">
+                                <option value="">Producto</option>
+                                <option value="Tablero 220V">Tablero 220V</option>
+                                <option value="Caja térmica 3P">Caja térmica 3P</option>
+                                <option value="Interruptor 63A">Interruptor 63A</option>
+                            </select>
+                            <input type="number" id="cantidad" placeholder="Cantidad" min="1" value="1">
+                            <button type="button" id="agregar-producto">➕</button>
+                        </div>
+                        <ul id="lista-productos" class="product-list"></ul>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fecha-seguimiento">Fecha de seguimiento</label>
+                        <input type="date" id="fecha-seguimiento" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notas">Notas adicionales</label>
+                        <textarea id="notas" rows="3"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Guardar y Generar PDF</button>
+                </form>
+            </section>
+        </main>
+    </div>
+    <script src="js/nueva-cotizacion.js"></script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotizaciones - COTISOFT</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="assets/logo.png" alt="A&H Soluciones" class="logo">
+                <span>COTISOFT</span>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li class="active"><a href="cotizaciones.html">Cotizaciones</a></li>
+                    <li><a href="clientes.html">Clientes</a></li>
+                    <li><a href="productos.html">Productos</a></li>
+                    <li id="admin-users-link" style="display: none;"><a href="usuarios.html">Usuarios</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logout-btn">Cerrar sesión</button>
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Cotizaciones</h1>
+                <div class="user-info">
+                    <span id="user-name"></span>
+                    <div class="user-avatar"></div>
+                </div>
+            </header>
+            <section class="content-section">
+                <div class="section-header">
+                    <button class="btn-primary" onclick="window.location.href='nueva-cotizacion.html'">
+                        + Nueva Cotización
+                    </button>
+                    <div class="search-filter">
+                        <input type="text" placeholder="Buscar cotización...">
+                        <select>
+                            <option>Todas</option>
+                            <option>Pendiente</option>
+                            <option>Enviada</option>
+                            <option>Ganada</option>
+                            <option>Perdida</option>
+                            <option>Vencida</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Fecha</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#00123</td>
+                                <td>Cliente A</td>
+                                <td>22/07/2025</td>
+                                <td>$1,250.00</td>
+                                <td><span class="status pending">Pendiente</span></td>
+                                <td>
+                                    <button class="btn-action">Ver</button>
+                                    <button class="btn-action">Editar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#00122</td>
+                                <td>Cliente B</td>
+                                <td>21/07/2025</td>
+                                <td>$3,480.00</td>
+                                <td><span class="status sent">Enviada</span></td>
+                                <td>
+                                    <button class="btn-action">Ver</button>
+                                    <button class="btn-action">Editar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#00121</td>
+                                <td>Cliente C</td>
+                                <td>20/07/2025</td>
+                                <td>$2,150.00</td>
+                                <td><span class="status won">Ganada</span></td>
+                                <td>
+                                    <button class="btn-action">Ver</button>
+                                    <button class="btn-action">Editar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="js/cotizaciones.js"></script>
+</body>
+</html>
