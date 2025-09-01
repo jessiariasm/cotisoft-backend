@@ -1,38 +1,62 @@
-// Datos de usuarios (simulando base de datos)
-let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [
-    {
-        id: 1,
-        nombre: "Vendedor Ejemplo",
-        email: "vendedor@cotisoft.com",
-        rol: "Vendedor",
-        activo: true,
-        password: "Vendedor123" // En un caso real, esto estaría encriptado
-    },
-    {
-        id: 2,
-        nombre: "Administrador Sistema",
-        email: "admin@cotisoft.com",
-        rol: "Administrador",
-        activo: true,
-        password: "Admin123"
-    },
-    {
-        id: 3,
-        nombre: "Gerente General",
-        email: "gerente@cotisoft.com",
-        rol: "Gerente",
-        activo: true,
-        password: "Gerente123"
+document.addEventListener('DOMContentLoaded', function() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = localStorage.getItem('token');
+    
+    if (!user || !token) {
+        window.location.href = 'login.html';
+        return;
     }
-];
+    
+    if (user.role !== 'admin') {
+        alert('Acceso denegado. Solo los administradores pueden acceder a esta sección.');
+        window.location.href = 'dashboard.html';
+        return;
+    }
+    
+    document.getElementById('user-name').textContent = user.name;
+    document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
+    
+    // Cargar usuarios reales
+    loadUsuarios(token);
+    
+    // Configurar eventos
+    document.getElementById('btn-nuevo-usuario').addEventListener('click', abrirModalNuevo);
+    document.getElementById('btn-guardar-usuario').addEventListener('click', guardarUsuario);
+    document.getElementById('btn-cancelar-usuario').addEventListener('click', cerrarModal);
+    document.querySelector('.close-modal').addEventListener('click', cerrarModal);
+    
+    document.getElementById('logout-btn').addEventListener('click', function() {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        window.location.href = 'login.html';
+    });
+});
 
-// Función para guardar usuarios en localStorage
-function guardarUsuarios() {
-    localStorage.setItem('usuarios', JSON.stringify(usuarios));
+function loadUsuarios(token) {
+    fetch('/api/usuarios', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al cargar usuarios');
+        }
+        return response.json();
+    })
+    .then(data => {
+        const usuarios = data.data || data;
+        renderUsuarios(usuarios);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al cargar los usuarios');
+    });
 }
 
-// Función para renderizar usuarios
-function renderizarUsuarios() {
+function renderUsuarios(usuarios) {
     const container = document.getElementById('users-container');
     container.innerHTML = '';
     
@@ -41,12 +65,12 @@ function renderizarUsuarios() {
         userCard.className = 'user-card';
         userCard.innerHTML = `
             <div class="user-header">
-                <div class="user-avatar big">${usuario.nombre.charAt(0)}</div>
+                <div class="user-avatar big">${usuario.name.charAt(0)}</div>
                 <div class="user-info">
-                    <h3>${usuario.nombre}</h3>
+                    <h3>${usuario.name}</h3>
                     <p>${usuario.email}</p>
                 </div>
-                <span class="role ${usuario.rol.toLowerCase()}">${usuario.rol}</span>
+                <span class="role ${usuario.role}">${usuario.role}</span>
             </div>
             <div class="user-details">
                 <p><strong>Estado:</strong> <span class="status ${usuario.activo ? 'activo' : 'inactivo'}">${usuario.activo ? 'Activo' : 'Inactivo'}</span></p>
@@ -80,7 +104,6 @@ function renderizarUsuarios() {
     });
 }
 
-// Función para abrir modal de nuevo usuario
 function abrirModalNuevo() {
     document.getElementById('modal-titulo').textContent = 'Nuevo Usuario';
     document.getElementById('usuario-form').reset();
@@ -89,22 +112,40 @@ function abrirModalNuevo() {
     document.getElementById('modal-usuario').style.display = 'flex';
 }
 
-// Función para abrir modal de edición
 function abrirModalEditar(id) {
-    const usuario = usuarios.find(u => u.id === id);
-    if (usuario) {
+    const token = localStorage.getItem('token');
+    
+    fetch('/api/usuarios/' + id, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al cargar usuario');
+        }
+        return response.json();
+    })
+    .then(usuario => {
         document.getElementById('modal-titulo').textContent = 'Editar Usuario';
         document.getElementById('usuario-id').value = usuario.id;
-        document.getElementById('usuario-nombre').value = usuario.nombre;
+        document.getElementById('usuario-nombre').value = usuario.name;
         document.getElementById('usuario-email').value = usuario.email;
-        document.getElementById('usuario-rol').value = usuario.rol;
+        document.getElementById('usuario-rol').value = usuario.role;
         document.getElementById('usuario-activo').checked = usuario.activo;
+        
         document.getElementById('modal-usuario').style.display = 'flex';
-    }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al cargar el usuario');
+    });
 }
 
-// Función para guardar usuario (nuevo o editado)
 function guardarUsuario() {
+    const token = localStorage.getItem('token');
     const id = document.getElementById('usuario-id').value;
     const nombre = document.getElementById('usuario-nombre').value;
     const email = document.getElementById('usuario-email').value;
@@ -116,126 +157,98 @@ function guardarUsuario() {
         return;
     }
     
-    // Validar formato de email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        alert('Por favor ingrese un email válido');
+    const usuarioData = {
+        name: nombre,
+        email: email,
+        role: rol,
+        activo: activo
+    };
+    
+    const url = id ? '/api/usuarios/' + id : '/api/usuarios';
+    const method = id ? 'PUT' : 'POST';
+    
+    fetch(url, {
+        method: method,
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(usuarioData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al guardar usuario');
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert(`Usuario ${id ? 'actualizado' : 'creado'} con éxito`);
+        cerrarModal();
+        loadUsuarios(token);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al guardar el usuario');
+    });
+}
+
+function toggleEstadoUsuario(id) {
+    const token = localStorage.getItem('token');
+    
+    fetch('/api/usuarios/' + id + '/toggle-status', {
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al cambiar estado');
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert(`Usuario ${data.activo ? 'activado' : 'desactivado'} correctamente`);
+        loadUsuarios(token);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al cambiar el estado del usuario');
+    });
+}
+
+function eliminarUsuario(id) {
+    if (!confirm('¿Está seguro de eliminar este usuario?')) {
         return;
     }
     
-    if (id) {
-        // Editar usuario existente
-        const index = usuarios.findIndex(u => u.id === parseInt(id));
-        if (index !== -1) {
-            usuarios[index] = {
-                ...usuarios[index],
-                nombre,
-                email,
-                rol,
-                activo
-            };
-        }
-    } else {
-        // Nuevo usuario - generar contraseña temporal
-        const tempPassword = generarPassword();
-        
-        const nuevoId = usuarios.length > 0 ? Math.max(...usuarios.map(u => u.id)) + 1 : 1;
-        usuarios.push({
-            id: nuevoId,
-            nombre,
-            email,
-            rol,
-            activo: true,
-            password: tempPassword
-        });
-        
-        alert(`Usuario creado. Contraseña temporal: ${tempPassword}`);
-    }
+    const token = localStorage.getItem('token');
     
-    guardarUsuarios();
-    renderizarUsuarios();
-    cerrarModal();
-}
-
-// Generar contraseña temporal
-function generarPassword() {
-    const length = 8;
-    const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let password = "";
-    for (let i = 0; i < length; i++) {
-        password += charset.charAt(Math.floor(Math.random() * charset.length));
-    }
-    return password;
-}
-
-// Cambiar estado activo/inactivo
-function toggleEstadoUsuario(id) {
-    const usuario = usuarios.find(u => u.id === id);
-    if (usuario) {
-        usuario.activo = !usuario.activo;
-        guardarUsuarios();
-        renderizarUsuarios();
-        alert(`Usuario ${usuario.activo ? 'activado' : 'desactivado'} correctamente`);
-    }
-}
-
-// Eliminar usuario
-function eliminarUsuario(id) {
-    if (confirm('¿Está seguro de eliminar este usuario? Esta acción no se puede deshacer.')) {
-        const index = usuarios.findIndex(u => u.id === id);
-        if (index !== -1) {
-            usuarios.splice(index, 1);
-            guardarUsuarios();
-            renderizarUsuarios();
-            alert('Usuario eliminado correctamente');
+    fetch('/api/usuarios/' + id, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/json'
         }
-    }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al eliminar usuario');
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert('Usuario eliminado correctamente');
+        loadUsuarios(token);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al eliminar el usuario');
+    });
 }
 
-// Función para cerrar modal
 function cerrarModal() {
     document.getElementById('modal-usuario').style.display = 'none';
 }
-
-// Inicializar la página
-document.addEventListener('DOMContentLoaded', function() {
-    // Verificar sesión y rol
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user) {
-        window.location.href = 'login.html';
-        return;
-    }
-    
-    if (user.role !== 'Administrador') {
-        alert('Acceso denegado. Solo los administradores pueden acceder a esta sección.');
-        window.location.href = 'dashboard.html';
-        return;
-    }
-    
-    // Configurar información de usuario
-    document.getElementById('user-name').textContent = user.name;
-    document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
-    
-    // Renderizar usuarios
-    renderizarUsuarios();
-    
-    // Eventos para el modal
-    document.getElementById('btn-nuevo-usuario').addEventListener('click', abrirModalNuevo);
-    document.getElementById('btn-guardar-usuario').addEventListener('click', guardarUsuario);
-    document.getElementById('btn-cancelar-usuario').addEventListener('click', cerrarModal);
-    document.querySelector('.close-modal').addEventListener('click', cerrarModal);
-    
-    // Evento para cerrar modal haciendo clic fuera del contenido
-    window.addEventListener('click', (e) => {
-        if (e.target === document.getElementById('modal-usuario')) {
-            cerrarModal();
-        }
-    });
-    
-    // Evento para logout
-    document.getElementById('logout-btn').addEventListener('click', function() {
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        window.location.href = 'login.html';
-    });
-});

@@ -1,77 +1,82 @@
-// Datos de ejemplo para productos (simulando base de datos)
-let productos = JSON.parse(localStorage.getItem('productos')) || [
-    {
-        id: 1,
-        nombre: "Tablero Eléctrico 220V",
-        referencia: "TAB-220",
-        categoria: "Tableros",
-        precio: 1200.50,
-        descripcion: "Tablero principal para instalaciones industriales con capacidad para 32 circuitos",
-        imagen: "https://via.placeholder.com/300"
-    },
-    {
-        id: 2,
-        nombre: "Interruptor Termomagnético 63A",
-        referencia: "IT-63",
-        categoria: "Componentes",
-        precio: 45.75,
-        descripcion: "Interruptor de seguridad para circuitos eléctricos de alta potencia",
-        imagen: "https://via.placeholder.com/300"
-    },
-    {
-        id: 3,
-        nombre: "Caja Térmica 3 Polos",
-        referencia: "CT-3P",
-        categoria: "Componentes",
-        precio: 28.90,
-        descripcion: "Caja de protección térmica para sistemas trifásicos",
-        imagen: ""
-    },
-    {
-        id: 4,
-        nombre: "Centro de Control de Motores",
-        referencia: "CCM-100",
-        categoria: "Tableros",
-        precio: 3250.00,
-        descripcion: "Sistema completo para control y protección de motores industriales",
-        imagen: "https://via.placeholder.com/300"
-    },
-    {
-        id: 5,
-        nombre: "Transformador 10KVA",
-        referencia: "TRA-10K",
-        categoria: "Componentes",
-        precio: 850.00,
-        descripcion: "Transformador de aislamiento para aplicaciones industriales",
-        imagen: "https://via.placeholder.com/300"
-    },
-    {
-        id: 6,
-        nombre: "Kit de Herramientas Eléctricas",
-        referencia: "KH-ELEC",
-        categoria: "Accesorios",
-        precio: 120.00,
-        descripcion: "Set completo de herramientas para instalaciones eléctricas",
-        imagen: ""
+document.addEventListener('DOMContentLoaded', function() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = localStorage.getItem('token');
+    
+    if (!user || !token) {
+        window.location.href = 'login.html';
+        return;
     }
-];
 
-// Función para guardar productos en localStorage
-function guardarProductos() {
-    localStorage.setItem('productos', JSON.stringify(productos));
+    document.getElementById('user-name').textContent = user.name;
+    document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
+    
+    if (user.role === 'admin') {
+        document.getElementById('admin-users-link').style.display = 'block';
+    }
+
+    // Cargar productos reales
+    loadProductos(token);
+    
+    // Configurar eventos
+    document.getElementById('btn-nuevo-producto').addEventListener('click', abrirModalNuevo);
+    document.getElementById('btn-guardar').addEventListener('click', guardarProducto);
+    document.getElementById('btn-cancelar').addEventListener('click', cerrarModal);
+    document.querySelector('.close-modal').addEventListener('click', cerrarModal);
+    
+    document.getElementById('buscar-producto').addEventListener('input', filtrarProductos);
+    document.getElementById('filtro-categoria').addEventListener('change', filtrarProductos);
+    
+    document.getElementById('logout-btn').addEventListener('click', function() {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        window.location.href = 'login.html';
+    });
+});
+
+function loadProductos(token, searchTerm = '', category = '') {
+    let url = '/api/productos';
+    const params = [];
+    
+    if (searchTerm) params.push('search=' + encodeURIComponent(searchTerm));
+    if (category) params.push('categoria=' + encodeURIComponent(category));
+    
+    if (params.length > 0) {
+        url += '?' + params.join('&');
+    }
+    
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al cargar productos');
+        }
+        return response.json();
+    })
+    .then(data => {
+        const productos = data.data || data;
+        renderProductos(productos);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al cargar los productos');
+    });
 }
 
-// Función para renderizar productos
-function renderizarProductos(products = productos) {
+function renderProductos(productos) {
     const container = document.getElementById('products-container');
     container.innerHTML = '';
     
-    if (products.length === 0) {
+    if (productos.length === 0) {
         container.innerHTML = '<div class="no-products">No se encontraron productos</div>';
         return;
     }
     
-    products.forEach(producto => {
+    productos.forEach(producto => {
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
@@ -114,7 +119,14 @@ function renderizarProductos(products = productos) {
     });
 }
 
-// Función para abrir modal de nuevo producto
+function filtrarProductos() {
+    const token = localStorage.getItem('token');
+    const searchTerm = document.getElementById('buscar-producto').value;
+    const category = document.getElementById('filtro-categoria').value;
+    
+    loadProductos(token, searchTerm, category);
+}
+
 function abrirModalNuevo() {
     document.getElementById('modal-titulo').textContent = 'Nuevo Producto';
     document.getElementById('form-producto').reset();
@@ -122,10 +134,23 @@ function abrirModalNuevo() {
     document.getElementById('modal-producto').style.display = 'flex';
 }
 
-// Función para abrir modal de edición
 function abrirModalEditar(id) {
-    const producto = productos.find(p => p.id === id);
-    if (producto) {
+    const token = localStorage.getItem('token');
+    
+    fetch('/api/productos/' + id, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al cargar producto');
+        }
+        return response.json();
+    })
+    .then(producto => {
         document.getElementById('modal-titulo').textContent = 'Editar Producto';
         document.getElementById('producto-id').value = producto.id;
         document.getElementById('nombre').value = producto.nombre;
@@ -133,13 +158,18 @@ function abrirModalEditar(id) {
         document.getElementById('categoria').value = producto.categoria;
         document.getElementById('precio').value = producto.precio;
         document.getElementById('descripcion').value = producto.descripcion;
-        document.getElementById('imagen').value = producto.imagen;
+        document.getElementById('imagen').value = producto.imagen || '';
+        
         document.getElementById('modal-producto').style.display = 'flex';
-    }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al cargar el producto');
+    });
 }
 
-// Función para guardar producto (nuevo o editado)
 function guardarProducto() {
+    const token = localStorage.getItem('token');
     const id = document.getElementById('producto-id').value;
     const nombre = document.getElementById('nombre').value;
     const referencia = document.getElementById('referencia').value;
@@ -153,122 +183,74 @@ function guardarProducto() {
         return;
     }
     
-    if (id) {
-        // Editar producto existente
-        const index = productos.findIndex(p => p.id === parseInt(id));
-        if (index !== -1) {
-            productos[index] = {
-                ...productos[index],
-                nombre,
-                referencia,
-                categoria,
-                precio,
-                descripcion,
-                imagen
-            };
-        }
-    } else {
-        // Nuevo producto
-        const nuevoId = productos.length > 0 ? Math.max(...productos.map(p => p.id)) + 1 : 1;
-        productos.push({
-            id: nuevoId,
-            nombre,
-            referencia,
-            categoria,
-            precio,
-            descripcion,
-            imagen
-        });
-    }
+    const productoData = {
+        nombre: nombre,
+        referencia: referencia,
+        categoria: categoria,
+        precio: precio,
+        descripcion: descripcion,
+        imagen: imagen
+    };
     
-    guardarProductos();
-    renderizarProductos();
-    cerrarModal();
-    alert(`Producto ${id ? 'actualizado' : 'creado'} con éxito`);
-}
-
-// Función para eliminar producto
-function eliminarProducto(id) {
-    if (confirm('¿Está seguro de eliminar este producto? Esta acción no se puede deshacer.')) {
-        const index = productos.findIndex(p => p.id === id);
-        if (index !== -1) {
-            productos.splice(index, 1);
-            guardarProductos();
-            renderizarProductos();
-            alert('Producto eliminado correctamente');
-        }
-    }
-}
-
-// Función para cerrar modal
-function cerrarModal() {
-    document.getElementById('modal-producto').style.display = 'none';
-}
-
-// Función para filtrar productos
-function filtrarProductos() {
-    const termino = document.getElementById('buscar-producto').value.toLowerCase();
-    const categoria = document.getElementById('filtro-categoria').value;
+    const url = id ? '/api/productos/' + id : '/api/productos';
+    const method = id ? 'PUT' : 'POST';
     
-    const resultados = productos.filter(producto => {
-        const coincideNombre = producto.nombre.toLowerCase().includes(termino);
-        const coincideRef = producto.referencia.toLowerCase().includes(termino);
-        const coincideCategoria = categoria ? producto.categoria === categoria : true;
-        
-        return (coincideNombre || coincideRef) && coincideCategoria;
+    fetch(url, {
+        method: method,
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(productoData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al guardar producto');
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert(`Producto ${id ? 'actualizado' : 'creado'} con éxito`);
+        cerrarModal();
+        loadProductos(token);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al guardar el producto');
     });
-    
-    renderizarProductos(resultados);
 }
 
-// Función para alternar la barra lateral en móviles
-function toggleSidebar() {
-    if (window.innerWidth <= 768) {
-        document.querySelector('.sidebar').classList.toggle('expanded');
-    }
-}
-
-// Inicializar la página
-document.addEventListener('DOMContentLoaded', function() {
-    // Cargar datos de usuario
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user) {
-        window.location.href = 'login.html';
+function eliminarProducto(id) {
+    if (!confirm('¿Está seguro de eliminar este producto?')) {
         return;
     }
     
-    document.getElementById('user-name').textContent = user.name;
-    document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
+    const token = localStorage.getItem('token');
     
-    // Mostrar enlace de usuarios solo para administradores
-    if (user.role === 'Administrador') {
-        document.getElementById('admin-users-link').style.display = 'block';
-    }
-    
-    // Renderizar productos
-    renderizarProductos();
-    
-    // Eventos para el modal
-    document.getElementById('btn-nuevo-producto').addEventListener('click', abrirModalNuevo);
-    document.getElementById('btn-guardar').addEventListener('click', guardarProducto);
-    document.getElementById('btn-cancelar').addEventListener('click', cerrarModal);
-    document.querySelector('.close-modal').addEventListener('click', cerrarModal);
-    
-    // Evento para cerrar modal haciendo clic fuera del contenido
-    window.addEventListener('click', (e) => {
-        if (e.target === document.getElementById('modal-producto')) {
-            cerrarModal();
+    fetch('/api/productos/' + id, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/json'
         }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al eliminar producto');
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert('Producto eliminado correctamente');
+        loadProductos(token);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al eliminar el producto');
     });
-    
-    // Eventos para filtros
-    document.getElementById('buscar-producto').addEventListener('input', filtrarProductos);
-    document.getElementById('filtro-categoria').addEventListener('change', filtrarProductos);
-    
-    // Evento para logout
-    document.getElementById('logout-btn').addEventListener('click', function() {
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        window.location.href = 'login.html';
-    });
-});
+}
+
+function cerrarModal() {
+    document.getElementById('modal-producto').style.display = 'none';
+}

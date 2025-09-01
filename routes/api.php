@@ -3,42 +3,39 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
-use App\Http\Controllers\API\ClienteController; // Importa el controlador
+use App\Http\Controllers\API\ClienteController;
 use App\Http\Controllers\API\CotizacionController;
 use App\Http\Controllers\API\ProductoController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\ReporteController;
+use App\Http\Controllers\API\DashboardController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-
-// Ruta pública de autenticación
+// Rutas públicas
 Route::post('/login', [AuthController::class, 'login']);
 
-// Grupo de rutas protegidas por autenticación Sanctum
+// Rutas protegidas con Sanctum
 Route::middleware('auth:sanctum')->group(function () {
-    // Rutas CRUD para clientes
-    Route::apiResource('clientes', ClienteController::class);
-    
-    // Rutas para otros recursos
-    Route::apiResource('cotizaciones', CotizacionController::class);
-    Route::apiResource('productos', ProductoController::class)->middleware('role:admin');
-    Route::apiResource('usuarios', UserController::class)->middleware('role:admin');
-    
-    // Rutas para reportes (gerente/admin)
-    Route::prefix('reportes')->middleware('role:gerente,admin')->group(function () {
-        Route::get('/cotizaciones', [ReporteController::class, 'cotizacionesPorEstado']);
-        Route::get('/ventas', [ReporteController::class, 'ventasPorVendedor']);
-    });
-    
-    // Ruta de logout (si la necesitas)
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
+
+    // API Resources
+    Route::apiResource('clientes', ClienteController::class);
+    Route::apiResource('productos', ProductoController::class);
+    Route::apiResource('cotizaciones', CotizacionController::class);
+    Route::apiResource('usuarios', UserController::class)->except(['store']);
+
+    // Rutas adicionales
+    Route::put('/usuarios/{id}/toggle-status', [UserController::class, 'toggleStatus']);
+    Route::get('/reportes/cotizaciones', [ReporteController::class, 'cotizacionesPorEstado']);
+    Route::get('/reportes/ventas', [ReporteController::class, 'ventasPorVendedor']);
 });
+
+// Ruta de fallback para API no encontrada
+Route::fallback(function () {
+    return response()->json([
+        'message' => 'Endpoint de API no encontrado. Verifica la URL y el método.'
+    ], 404);
+});
+
+// Ruta de prueba
+Route::get('/prueba', fn() => 'Hola desde API');
