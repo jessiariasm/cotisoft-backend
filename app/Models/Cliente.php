@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Cliente extends Model
 {
     protected $fillable = ['nombre', 'empresa', 'nit', 'contacto'];
-    
+
     /**
      * Obtener las cotizaciones del cliente.
      */

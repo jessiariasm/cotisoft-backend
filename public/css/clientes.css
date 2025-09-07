@@ -1,0 +1,301 @@
+:root {
+    --ah-blue: #1E3A8A;
+    --ah-light: #F5F5F5;
+    --ah-dark: #333333;
+    --ah-accent: #0057d8;
+    --ah-border: #d4d4d4;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Helvetica Neue', sans-serif;
+}
+
+body {
+    background-color: var(--ah-light);
+    color: var(--ah-dark);
+}
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: white;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--ah-border);
+}
+
+.sidebar-header .logo {
+    width: 40px;
+    margin-right: 10px;
+}
+
+.sidebar-header span {
+    font-weight: bold;
+    color: var(--ah-blue);
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 20px 0;
+}
+
+.sidebar-nav li a {
+    display: block;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: var(--ah-dark);
+    transition: background 0.3s;
+}
+
+.sidebar-nav li a:hover {
+    background-color: var(--ah-light);
+}
+
+.sidebar-nav li.active a {
+    background-color: var(--ah-blue);
+    color: white;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding: 20px;
+}
+
+#logout-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--ah-blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#logout-btn:hover {
+    background-color: #152c6e;
+}
+
+/* Main content */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--ah-border);
+}
+
+.main-header h1 {
+    color: var(--ah-dark);
+    font-size: 24px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-info span {
+    color: var(--ah-dark);
+    font-size: 14px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--ah-blue);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* Sección de clientes */
+.clientes-section {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Buscador y botón */
+.search-filter {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.search-filter input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--ah-border);
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background-color: var(--ah-blue);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #152c6e;
+}
+
+/* Tabla de clientes */
+.table-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    overflow-x: auto;
+}
+
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-container th,
+.table-container td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--ah-border);
+    font-size: 14px;
+}
+
+.table-container th {
+    background-color: var(--ah-light);
+    font-weight: bold;
+    color: var(--ah-dark);
+}
+
+.table-container tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Botones de acción */
+.btn-action {
+    padding: 6px 12px;
+    margin: 0 3px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    color: white;
+}
+
+.btn-action:nth-child(1) {
+    background-color: #3498db; /* Ver */
+}
+
+.btn-action:nth-child(2) {
+    background-color: #f1c40f; /* Editar */
+}
+
+.btn-action:nth-child(3) {
+    background-color: #e74c3c; /* Eliminar */
+}
+
+.btn-action:hover {
+    opacity: 0.9;
+}
+
+/* ===== Modal Crear/Editar Cliente ===== */
+.modal {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 8% auto;
+    padding: 20px;
+    border-radius: 12px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    font-size: 20px;
+    color: var(--ah-dark);
+    text-align: center;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid var(--ah-border);
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.modal-content button {
+    padding: 10px 15px;
+    margin: 10px 5px 0 0;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#cliente-save-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#cliente-cancel-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+.modal-content button:hover {
+    opacity: 0.9;
+}
+
+/* Animación */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

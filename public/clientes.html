@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clientes - COTISOFT</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/clientes.css">
 </head>
 <body>
     <div class="app-container">
@@ -36,7 +36,7 @@
             </header>
             <section class="content-section">
                 <div class="section-header">
-                    <button class="btn-primary">+ Nuevo Cliente</button>
+                    <button id="nuevo-cliente-btn" class="btn-primary">+ Nuevo Cliente</button>
                     <div class="search-filter">
                         <input type="text" placeholder="Buscar cliente...">
                     </div>
@@ -53,35 +53,40 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>Cliente A</td>
-                                <td>Industrias ABC</td>
-                                <td>123456-7</td>
-                                <td>contacto@clientea.com</td>
-                                <td>5</td>
-                                <td>
-                                    <button class="btn-action">Ver</button>
-                                    <button class="btn-action">Editar</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Cliente B</td>
-                                <td>Empresa XYZ</td>
-                                <td>765432-1</td>
-                                <td>info@clienteb.com</td>
-                                <td>12</td>
-                                <td>
-                                    <button class="btn-action">Ver</button>
-                                    <button class="btn-action">Editar</button>
-                                </td>
-                            </tr>
-                        </tbody>
+                        <tbody id="clientes-tbody">
+    <!-- Aquí se insertarán dinámicamente los clientes -->
+</tbody>
                     </table>
                 </div>
             </section>
         </main>
     </div>
-    <script src="js/clientes.js"></script>
+
+    <!-- Modal Cliente -->
+<div id="cliente-modal" class="modal" style="display:none;">
+  <div class="modal-content">
+      <h2 id="modal-title">Nuevo Cliente</h2>
+      <form id="cliente-form">
+          <label for="cliente-nombre">Nombre:</label>
+<input type="text" id="cliente-nombre" required>
+
+<label for="cliente-empresa">Empresa:</label>
+<input type="text" id="cliente-empresa" required>
+
+<label for="cliente-nit">NIT:</label>
+<input type="text" id="cliente-nit" required>
+
+<label for="cliente-contacto">Contacto (email):</label>
+<input type="email" id="cliente-contacto" required>
+
+
+          <div class="modal-actions">
+              <button type="submit" id="cliente-save-btn" class="btn-primary">Guardar</button>
+              <button type="button" id="cliente-cancel-btn">Cancelar</button>
+          </div>
+      </form>
+  </div>
+</div>
+ <script src="js/clientes.js"></script>
 </body>
 </html>
